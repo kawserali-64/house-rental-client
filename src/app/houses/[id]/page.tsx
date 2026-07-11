@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-
 import {
   FaBath,
   FaBed,
@@ -13,9 +12,9 @@ import {
   FaArrowLeft,
   FaCheckCircle,
 } from "react-icons/fa";
-
 import { BiArea } from "react-icons/bi";
 
+// Interfaces
 interface House {
   _id: string;
   title: string;
@@ -36,32 +35,50 @@ interface House {
   image: string;
 }
 
-async function getHouse(id: string): Promise<House | null> {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/houses/${id}`,
-      {
-        cache: "no-store",
-      }
-    );
-    if (!res.ok) return null;
-
-    return res.json();
-
-  } catch (error) {
-
-    return null;
-
-  }
-
+interface RelatedHouse {
+  _id: string;
+  title: string;
+  shortDescription: string;
+  image: string;
+  rent: string;
+  division: string;
+  district: string;
 }
 
+// Data Fetching Functions
+async function getHouse(id: string): Promise<House | null> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/houses/${id}`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch (error) {
+    return null;
+  }
+}
+
+async function getRelatedHouses(id: string): Promise<RelatedHouse[]> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/houses/${id}/related`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.houses || [];
+  } catch (error) {
+    return [];
+  }
+}
+
+// Page Component
 export default async function HouseDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const house = await getHouse(id);
-
+  
   if (!house) return notFound();
 
+  const relatedHouses = await getRelatedHouses(id);
   const features = ["Safe & Secure Environment", "Modern Living Space", "Good Communication System", "Family Friendly Area"];
 
   return (
@@ -69,7 +86,7 @@ export default async function HouseDetailsPage({ params }: { params: Promise<{ i
       <div className="max-w-7xl mx-auto px-4">
         
         {/* Back Button */}
-        <Link href="/" className="inline-flex items-center gap-2 text-cyan-700 font-semibold mb-8 hover:translate-x-[-5px] transition-all">
+        <Link href="/" className="inline-flex items-center gap-2 text-cyan-700 font-semibold mb-8 hover:underline">
           <FaArrowLeft /> Back To Home
         </Link>
 
@@ -91,7 +108,7 @@ export default async function HouseDetailsPage({ params }: { params: Promise<{ i
 
         {/* Hero Image */}
         <div className="relative w-full h-[350px] md:h-[600px] rounded-[2rem] overflow-hidden shadow-2xl mb-12 group">
-          <Image src={house.image} alt={house.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" priority />
+          <Image src={house.image} alt={house.title} fill className="object-cover" priority />
         </div>
 
         <div className="grid lg:grid-cols-3 gap-10">
@@ -133,31 +150,54 @@ export default async function HouseDetailsPage({ params }: { params: Promise<{ i
             </div>
           </div>
 
-          {/* Right Sidebar (Sticky) */}
+          {/* Right Sidebar */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-[2rem] p-8 shadow-xl border border-gray-100 sticky top-24">
               <p className="text-gray-500">Monthly Rent</p>
               <h2 className="text-5xl font-extrabold text-cyan-700 mt-1 mb-8">৳{house.rent}</h2>
-              
               <div className="space-y-4 mb-8">
                 <div className="flex justify-between items-center py-3 border-b border-gray-100">
                   <span className="flex items-center gap-2 text-gray-600"><FaShieldAlt className="text-cyan-600"/> Security Deposit</span>
                   <span className="font-bold text-gray-900">৳{house.securityDeposit}</span>
                 </div>
               </div>
-
               <div className="bg-gray-50 rounded-2xl p-6 text-center">
                 <h3 className="font-bold text-gray-800 mb-2">Owner Contact</h3>
                 <p className="text-cyan-700 font-bold text-lg mb-6 flex items-center justify-center gap-2">
                   <FaPhoneAlt/> {house.contactNumber}
                 </p>
-                <button className="w-full bg-cyan-600 hover:bg-cyan-700 text-white py-4 rounded-xl font-bold transition-all transform hover:scale-[1.02] shadow-lg shadow-cyan-200">
+                <button className="w-full bg-cyan-600 hover:bg-cyan-700 text-white py-4 rounded-xl font-bold transition-all">
                   Call Now
                 </button>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Related Houses */}
+        {relatedHouses.length > 0 && (
+          <section className="mt-16">
+            <h2 className="text-3xl font-extrabold text-gray-900 mb-8">Related Houses</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {relatedHouses.map((item) => (
+                <div key={item._id} className="bg-white rounded-3xl overflow-hidden shadow-md border border-gray-100">
+                  <div className="relative h-52">
+                    <Image src={item.image} alt={item.title} fill className="object-cover" />
+                  </div>
+                  <div className="p-5">
+                    <h3 className="text-xl font-bold text-gray-900">{item.title}</h3>
+                    <p className="text-gray-500 text-sm mt-2 line-clamp-2">{item.shortDescription}</p>
+                    <p className="text-cyan-700 font-bold text-lg mt-4">৳{item.rent}</p>
+                    <p className="text-gray-500 text-sm">{item.district}, {item.division}</p>
+                    <Link href={`/houses/${item._id}`} className="block mt-5 bg-cyan-600 hover:bg-cyan-700 text-white text-center py-3 rounded-xl font-bold">
+                      View Details
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </section>
   );
