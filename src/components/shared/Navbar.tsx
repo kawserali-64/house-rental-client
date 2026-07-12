@@ -125,7 +125,7 @@ export default function Navbar() {
 
 
                 {navLink(
-                  "/my-houses",
+                  "/houses/my-houses",
                   "My Houses"
                 )}
 
