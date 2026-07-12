@@ -7,6 +7,7 @@ import { Button, Input, Label } from "@heroui/react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
+import { FcGoogle } from "react-icons/fc";
 
 type Errors = {
   name?: string;
@@ -81,9 +82,6 @@ export default function SignupPage() {
     } else if (!/[0-9]/.test(password)) {
       newErrors.password =
         "Password needs one number";
-    } else if (!/[!@#$%^&*]/.test(password)) {
-      newErrors.password =
-        "Password needs one special character";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -111,6 +109,13 @@ export default function SignupPage() {
 
     router.push("/");
     router.refresh();
+  };
+
+  const handleGoogleSignup = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/",
+    });
   };
 
   return (
@@ -236,6 +241,14 @@ export default function SignupPage() {
             isLoading={loading}
           >
             Sign Up
+          </Button>
+          <Button
+            type="button"
+            onPress={handleGoogleSignup}
+            className="w-full h-12 rounded-xl border-2 border-gray-300 bg-white text-gray-700 font-semibold hover:border-cyan-600 hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-3"
+          >
+            <FcGoogle size={22} />
+            Continue with Google
           </Button>
 
         </form>

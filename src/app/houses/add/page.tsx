@@ -79,7 +79,7 @@ export default function AddHousePage() {
             if (!response.ok) throw new Error("Failed to add property");
             
             toast.success("Property added successfully!");
-            router.push("/items/manage");
+            router.push("/houses/my-houses");
         } catch (error) {
             toast.error(error instanceof Error ? error.message : "Something went wrong");
         } finally {
