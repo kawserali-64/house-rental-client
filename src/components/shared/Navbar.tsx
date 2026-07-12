@@ -8,366 +8,127 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { FaBars, FaTimes } from "react-icons/fa";
 
-
 export default function Navbar() {
-
   const pathname = usePathname();
-
   const router = useRouter();
-
   const [open, setOpen] = useState(false);
 
-
-  const {
-    data: session,
-    isPending
-  } = authClient.useSession();
-
-
-
+  const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
-
-
   const handleLogout = async () => {
-
-
     await authClient.signOut();
-
-
-    toast.success(
-      "Logout successful"
-    );
-
-
+    toast.success("Logout successful");
     setOpen(false);
-
-
     router.push("/signin");
-
-
     router.refresh();
-
   };
 
-  const navLink = (
-    href: string,
-    label: string
-  ) => (
-
+  const navLink = (href: string, label: string) => (
     <Link
-
       href={href}
-
       onClick={() => setOpen(false)}
-
-      className={`
-        transition
-        ${pathname === href
-          ? "font-semibold text-blue-600"
-          : "text-gray-700 hover:text-blue-600"
-        }
-      `}
-
+      className={`text-sm font-medium transition-colors duration-300 ${
+        pathname === href ? "text-cyan-600" : "text-gray-600 hover:text-cyan-600"
+      }`}
     >
-
       {label}
-
     </Link>
-
   );
 
   return (
-
-    <header className="sticky top-0 z-50 border-b bg-white">
-
-
+    <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5">
-
-
-
         {/* Logo */}
-
-        <Link
-
-          href="/"
-
-          className="text-2xl font-bold text-blue-600"
-
-        >
-
+        <Link href="/" className="text-2xl font-extrabold text-cyan-600">
           HouseRent
-
         </Link>
 
-
         {/* Desktop Menu */}
-
-        <nav className="hidden items-center gap-7 md:flex">
-
+        <nav className="hidden items-center gap-8 md:flex">
           {navLink("/", "Home")}
-
           {navLink("/houses", "Explore")}
-
           {navLink("/about", "About")}
-
           {navLink("/contact", "Contact")}
-
-          {
-            user && !isPending && (
-
-              <>
-
-                {navLink(
-                  "/houses/add",
-                  "Add House"
-                )}
-
-
-                {navLink(
-                  "/houses/my-houses",
-                  "My Houses"
-                )}
-
-
-              </>
-
-            )
-
-          }
-
+          {user && !isPending && (
+            <>
+              {navLink("/houses/add", "Add House")}
+              {navLink("/houses/my-houses", "My Houses")}
+              {navLink("/houses/dashboard", "Dashboard")}
+            </>
+          )}
         </nav>
 
         {/* Desktop Right */}
-
-        <div className="hidden items-center gap-3 md:flex">
-
-          {
-            isPending ? (
-              <div className="h-10 w-28 animate-pulse rounded bg-gray-200" />
-            )
-              :
-              !user ? (
-                <>
-                  <Link href="/signin">
-                    <button
-                      className="rounded-lg border px-4 py-2 hover:bg-gray-100"
-                    >
-                      Sign In
-                    </button>
-                  </Link>
-
-                  <Link href="/signup">
-                    <button
-                      className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-                    >
-                      Sign Up
-
-                    </button>
-                  </Link>
-                </>
-              )
-                :
-                (
-                  <>
-                    <Image
-
-                      src={
-                        user.image ||
-                        "/avatar.png"
-                      }
-
-                      alt="User"
-
-                      width={40}
-
-                      height={40}
-
-                      className="h-10 w-10 rounded-full object-cover"
-                    />
-                    <span className="text-sm font-medium">
-                      {user.name}
-                    </span>
-                    <button
-                      onClick={handleLogout}
-                      className="rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600"
-                    >
-                      Logout
-                    </button>
-                  </>
-                )
-          }
+        <div className="hidden items-center gap-4 md:flex">
+          {isPending ? (
+            <div className="h-10 w-28 animate-pulse rounded-lg bg-gray-100" />
+          ) : !user ? (
+            <>
+              <Link href="/signin" className="text-sm font-semibold text-gray-600 hover:text-cyan-600 transition">
+                Sign In
+              </Link>
+              <Link href="/signup" className="rounded-xl bg-cyan-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-cyan-700 transition shadow-lg shadow-cyan-500/20">
+                Sign Up
+              </Link>
+            </>
+          ) : (
+            <div className="flex items-center gap-4">
+              <Link href="/houses/profile" className="flex items-center gap-2">
+                <Image
+                  src={user.image || "/avatar.png"}
+                  alt="User"
+                  width={36}
+                  height={36}
+                  className="h-9 w-9 rounded-full object-cover border border-gray-100"
+                />
+                <span className="text-sm font-semibold text-gray-700">{user.name}</span>
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="text-sm font-bold text-red-500 hover:text-red-600 transition"
+              >
+                Logout
+              </button>
+            </div>
+          )}
         </div>
+
         {/* Mobile Button */}
-        <button
-          onClick={() => setOpen(!open)}
-          className="text-2xl md:hidden"
-        >
-          {
-            open ?
-              <FaTimes />
-              :
-              <FaBars />
-          }
+        <button onClick={() => setOpen(!open)} className="text-xl md:hidden text-gray-600">
+          {open ? <FaTimes /> : <FaBars />}
         </button>
       </div>
 
       {/* Mobile Menu */}
-
-      {
-
-        open && (
-          <div className="border-t bg-white px-5 py-5 md:hidden">
-
-            <nav className="flex flex-col gap-5">
-
-              {navLink("/", "Home")}
-
-              {navLink("/houses", "Explore")}
-
-              {navLink("/about", "About")}
-
-              {navLink("/contact", "Contact")}
-              {
-                user && !isPending && (
-                  <>
-                    {navLink(
-                      "/houses/add",
-                      "Add House"
-                    )}
-                    {navLink(
-                      "/my-houses",
-                      "My Houses"
-                    )}
-
-                  </>
-
-                )
-
-              }
-
-              {
-
-                isPending ? (
-
-                  <div className="h-10 w-full animate-pulse rounded bg-gray-200" />
-
-
-                )
-
-                  :
-
-                  !user ? (
-
-                    <div className="flex flex-col gap-3 pt-3">
-
-
-                      <Link href="/signin">
-
-                        <button className="w-full rounded-lg border px-4 py-2">
-
-                          Sign In
-
-                        </button>
-
-                      </Link>
-
-
-
-
-                      <Link href="/signup">
-
-                        <button className="w-full rounded-lg bg-blue-600 px-4 py-2 text-white">
-
-                          Sign Up
-
-                        </button>
-
-                      </Link>
-
-
-                    </div>
-
-
-                  )
-
-                    :
-
-                    (
-
-
-                      <div className="flex items-center justify-between border-t pt-4">
-
-
-                        <div className="flex items-center gap-3">
-
-
-                          <Image
-
-                            src={
-                              user.image ||
-                              "/avatar.png"
-                            }
-
-                            alt="User"
-
-                            width={40}
-
-                            height={40}
-
-                            className="h-10 w-10 rounded-full object-cover"
-
-                          />
-
-
-                          <span className="font-medium">
-
-                            {user.name}
-
-                          </span>
-
-
-                        </div>
-
-
-
-
-                        <button
-
-                          onClick={handleLogout}
-
-                          className="rounded-lg bg-red-500 px-4 py-2 text-white"
-
-                        >
-
-                          Logout
-
-                        </button>
-
-
-                      </div>
-
-
-                    )
-
-              }
-
-
-
-
-            </nav>
-
-
-          </div>
-
-        )
-
-      }
-
-
-
+      {open && (
+        <div className="absolute left-0 w-full border-b bg-white px-5 py-6 md:hidden shadow-xl animate-in slide-in-from-top-5 duration-300">
+          <nav className="flex flex-col gap-5">
+            {navLink("/", "Home")}
+            {navLink("/houses", "Explore")}
+            {navLink("/about", "About")}
+            {navLink("/contact", "Contact")}
+            {user && !isPending && (
+              <>
+                {navLink("/houses/add", "Add House")}
+                {navLink("/houses/my-houses", "My Houses")}
+                {navLink("/houses/dashboard", "Dashboard")}
+              </>
+            )}
+            
+            <div className="border-t pt-4 mt-2">
+              {!user ? (
+                <div className="flex flex-col gap-3">
+                  <Link href="/signin" className="w-full text-center rounded-lg border py-2.5 font-semibold text-gray-600">Sign In</Link>
+                  <Link href="/signup" className="w-full text-center rounded-lg bg-cyan-600 py-2.5 font-semibold text-white">Sign Up</Link>
+                </div>
+              ) : (
+                <button onClick={handleLogout} className="w-full rounded-lg bg-red-50 py-2.5 font-semibold text-red-600">Logout</button>
+              )}
+            </div>
+          </nav>
+        </div>
+      )}
     </header>
-
   );
-
 }
