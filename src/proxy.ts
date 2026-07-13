@@ -8,6 +8,8 @@ export function proxy(request: NextRequest) {
   const protectedRoutes = [
     "/houses/add",
     "/houses/my-houses",
+    "/houses/dashboard",
+    "/houses/dashboard/profile",
   ];
 
 
@@ -31,5 +33,7 @@ export const config = {
   matcher: [
     "/houses/add",
     "/houses/my-houses/:path*",
+    "/houses/dashboard",
+    "/houses/dashboard/profile",
   ],
 };
