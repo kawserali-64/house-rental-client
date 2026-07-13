@@ -24,6 +24,9 @@ export default function Navbar() {
     router.refresh();
   };
 
+  // Common styles for both mobile and desktop buttons
+  const logoutBtnStyle = "rounded-xl font-bold transition-all active:scale-95 flex items-center justify-center";
+
   const navLink = (href: string, label: string) => (
     <Link
       href={href}
@@ -65,36 +68,23 @@ export default function Navbar() {
             <div className="h-10 w-28 animate-pulse rounded-lg bg-gray-100" />
           ) : !user ? (
             <>
-              <Link href="/signin" className="text-sm font-semibold text-gray-600 hover:text-cyan-600 transition">
-                Sign In
-              </Link>
-              <Link href="/signup" className="rounded-xl bg-cyan-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-cyan-700 transition shadow-lg shadow-cyan-500/20">
-                Sign Up
-              </Link>
+              <Link href="/signin" className="text-sm font-semibold text-gray-600 hover:text-cyan-600 transition">Sign In</Link>
+              <Link href="/signup" className="rounded-xl bg-cyan-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-cyan-700 transition shadow-lg shadow-cyan-500/20">Sign Up</Link>
             </>
           ) : (
             <div className="flex items-center gap-4">
               <Link href="/houses/profile" className="flex items-center gap-2">
-                <Image
-                  src={user.image || "/avatar.png"}
-                  alt="User"
-                  width={36}
-                  height={36}
-                  className="h-9 w-9 rounded-full object-cover border border-gray-100"
-                />
+                <Image src={user.image || "/avatar.png"} alt="User" width={36} height={36} className="h-9 w-9 rounded-full object-cover border border-gray-100" />
                 <span className="text-sm font-semibold text-gray-700">{user.name}</span>
               </Link>
-              <button
-                onClick={handleLogout}
-                className="text-sm font-bold text-red-500 hover:text-red-600 transition"
-              >
+              <button onClick={handleLogout} className={`${logoutBtnStyle} text-sm text-red-500 hover:text-red-600 px-3 py-2 bg-red-50 hover:bg-red-100`}>
                 Logout
               </button>
             </div>
           )}
         </div>
 
-        {/* Mobile Button */}
+        {/* Mobile Toggle */}
         <button onClick={() => setOpen(!open)} className="text-xl md:hidden text-gray-600">
           {open ? <FaTimes /> : <FaBars />}
         </button>
@@ -116,14 +106,22 @@ export default function Navbar() {
               </>
             )}
             
-            <div className="border-t pt-4 mt-2">
+            <div className="border-t pt-5 mt-2">
               {!user ? (
                 <div className="flex flex-col gap-3">
-                  <Link href="/signin" className="w-full text-center rounded-lg border py-2.5 font-semibold text-gray-600">Sign In</Link>
-                  <Link href="/signup" className="w-full text-center rounded-lg bg-cyan-600 py-2.5 font-semibold text-white">Sign Up</Link>
+                  <Link href="/signin" className="w-full text-center rounded-lg border py-3 font-semibold text-gray-600">Sign In</Link>
+                  <Link href="/signup" className="w-full text-center rounded-lg bg-cyan-600 py-3 font-semibold text-white">Sign Up</Link>
                 </div>
               ) : (
-                <button onClick={handleLogout} className="w-full rounded-lg bg-red-50 py-2.5 font-semibold text-red-600">Logout</button>
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <Image src={user.image || "/avatar.png"} alt="User" width={40} height={40} className="h-10 w-10 rounded-full object-cover border border-gray-100" />
+                    <span className="font-bold text-gray-900">{user.name}</span>
+                  </div>
+                  <button onClick={handleLogout} className={`${logoutBtnStyle} w-full py-3 bg-red-50 text-red-600 hover:bg-red-100`}>
+                    Logout
+                  </button>
+                </div>
               )}
             </div>
           </nav>
