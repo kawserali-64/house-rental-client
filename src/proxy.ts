@@ -11,24 +11,16 @@ export function proxy(request: NextRequest) {
     "/houses/dashboard",
     "/houses/dashboard/profile",
   ];
-
-
   const isProtected = protectedRoutes.some((route) =>
     pathname.startsWith(route)
   );
-
-
   if (isProtected && !session) {
     return NextResponse.redirect(
       new URL("/signin", request.url)
     );
   }
-
-
   return NextResponse.next();
 }
-
-
 export const config = {
   matcher: [
     "/houses/add",

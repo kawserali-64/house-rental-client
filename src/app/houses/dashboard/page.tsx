@@ -1,5 +1,6 @@
 "use client";
 
+import { authClient } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
 import {
   BarChart,
@@ -45,28 +46,38 @@ export default function DashboardPage() {
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchDashboard() {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/dashboard`,
-          {
-            cache: "no-store",
-          }
-        );
+useEffect(() => {
+  async function fetchDashboard() {
+    try {
+      const { data: tokenData, error } = await authClient.token();
 
-        const data = await res.json();
-
-        setDashboard(data);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
+      if (error || !tokenData?.token) {
+        console.error("Failed to get token", error);
+        return;
       }
-    }
 
-    fetchDashboard();
-  }, []);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/dashboard`,
+        {
+          cache: "no-store",
+          headers: {
+            Authorization: `Bearer ${tokenData?.token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      setDashboard(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  fetchDashboard();
+}, []);
 
   if (loading) {
     return (

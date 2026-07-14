@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
 import { HiCloudArrowUp, HiSparkles } from "react-icons/hi2";
-import { useSession } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth-client";
 
 export default function AddHousePage() {
     const router = useRouter();
@@ -39,6 +39,7 @@ export default function AddHousePage() {
         if (!imageFile) throw new Error("Image is required");
         const formData = new FormData();
         formData.append("image", imageFile);
+
         const res = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`, {
             method: "POST",
             body: formData,
@@ -70,11 +71,19 @@ export default function AddHousePage() {
                 createdAt: new Date()
             };
 
-            const response = await fetch("http://localhost:5000/houses", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
+            const { data } = await authClient.token();
+           
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_SERVER_URL}/houses`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${data?.token}`,
+                    },
+                    body: JSON.stringify(payload),
+                }
+            );
 
             if (!response.ok) throw new Error("Failed to add property");
 

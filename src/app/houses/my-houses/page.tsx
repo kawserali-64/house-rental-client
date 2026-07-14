@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useSession } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
 import { FaEye, FaTrash, FaTimes } from "react-icons/fa";
 import toast from "react-hot-toast";
@@ -26,26 +26,74 @@ export default function MyHousesPage() {
   useEffect(() => {
     const fetchHouses = async () => {
       if (!session?.user?.id) return;
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/my-houses/${session.user.id}`);
-      const data = await res.json();
-      setHouses(data.houses || []);
+
+      try {
+        const { data: tokenData, error } = await authClient.token();
+
+
+        if (error || !tokenData?.token) {
+          console.error("Failed to get token", error);
+          return;
+        }
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/my-houses/${session.user.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${tokenData.token}`,
+            },
+          }
+        );
+
+        const data = await res.json();
+
+        setHouses(data.houses || []);
+      } catch (error) {
+        console.log(error);
+      }
     };
+
     fetchHouses();
   }, [session]);
 
   const handleDelete = async () => {
     if (!deleteId) return;
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/houses/${deleteId}`, { method: "DELETE" });
-    const data = await res.json();
-    if (data.success) {
-      toast.success("House deleted successfully");
-      setHouses(houses.filter((house) => house._id !== deleteId));
-    } else {
-      toast.error("Delete failed");
-    }
-    setDeleteId(null);
-  };
 
+    try {
+      const { data: tokenData, error } = await authClient.token();
+
+      if (error || !tokenData?.token) {
+        toast.error("Authentication failed");
+        return;
+      }
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/houses/${deleteId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${tokenData.token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        toast.success("House deleted successfully");
+
+        setHouses((prev) =>
+          prev.filter((house) => house._id !== deleteId)
+        );
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    } finally {
+      setDeleteId(null);
+    }
+  };
   if (isPending) return <div className="min-h-screen flex justify-center items-center">Loading...</div>;
   if (!session) return <div className="min-h-screen flex justify-center items-center">Please Login First</div>;
 
@@ -87,9 +135,8 @@ export default function MyHousesPage() {
                       </td>
                       <td className="p-4 font-bold text-cyan-600">৳{house.rent}</td>
                       <td className="p-4">
-                        <span className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${
-                          house.availability === "Available" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
-                        }`}>
+                        <span className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${house.availability === "Available" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+                          }`}>
                           {house.availability}
                         </span>
                       </td>
