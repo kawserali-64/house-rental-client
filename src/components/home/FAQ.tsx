@@ -39,18 +39,21 @@ export default function FAQ() {
           transition={{ delay: 0.2, duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <Accordion 
-            variant="splitted"
+          <Accordion
+            variant="surface"
             className="flex flex-col gap-4"
           >
             {faqs.map((faq) => (
               <AccordionItem
                 key={faq.key}
                 aria-label={faq.title}
-                title={<span className="text-lg font-bold text-gray-800">{faq.title}</span>}
-                className="group px-6 py-2 bg-white border border-gray-100 rounded-3xl shadow-sm hover:border-cyan-200 hover:shadow-cyan-500/5 transition-all duration-300"
+                className="group rounded-3xl border border-gray-100 bg-white px-6 py-2 shadow-sm transition-all duration-300 hover:border-cyan-200 hover:shadow-cyan-500/5"
               >
-                <p className="text-gray-500 leading-relaxed pb-4">
+                <span slot="title" className="text-lg font-bold text-gray-800">
+                  {faq.title}
+                </span>
+
+                <p className="pb-4 leading-relaxed text-gray-500">
                   {faq.content}
                 </p>
               </AccordionItem>

@@ -8,7 +8,7 @@ interface House {
   title: string;
   shortDescription: string;
   image: string;
-  rent: string;
+  rent: number;
   district: string;
   division: string;
   bedrooms: string;

@@ -15,17 +15,20 @@ interface HouseCardProps {
     title: string;
     shortDescription: string;
     image: string;
-    rent: string;
+
+    rent: number;
+
     district: string;
     division: string;
+
     bedrooms: string;
     bathrooms: string;
     area: string;
+
     category: string;
     availability: string;
   };
 }
-
 const HouseCard = ({ house }: HouseCardProps) => {
   return (
     <div className="group flex h-[460px] w-full flex-col overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
@@ -96,7 +99,7 @@ const HouseCard = ({ house }: HouseCardProps) => {
             </p>
 
             <h3 className="text-2xl font-bold text-cyan-700">
-              ৳{house.rent}
+              ৳{house.rent.toLocaleString()}
             </h3>
           </div>
 

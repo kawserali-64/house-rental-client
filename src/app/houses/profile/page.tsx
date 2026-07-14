@@ -110,7 +110,7 @@ const ProfilePage = () => {
                 <p className="text-sm text-gray-500">Joined</p>
                 <p className="font-semibold">
                   {"createdAt" in user && user.createdAt
-                    ? new Date(user.createdAt as string).toLocaleDateString()
+                    ? new Date(user.createdAt).toLocaleDateString()
                     : "Recently"}
                 </p>
               </div>

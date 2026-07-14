@@ -101,9 +101,9 @@ export default function SignupPage() {
     setLoading(false);
 
     if (error) {
-      toast.error(error.message);
-      return;
-    }
+  toast.error(error.message ?? "Something went wrong");
+  return;
+}
 
     toast.success("Account created successfully!");
 
@@ -236,9 +236,9 @@ export default function SignupPage() {
 
           <Button
             type="submit"
-            color="primary"
+            // color="primary"
             className="w-full"
-            isLoading={loading}
+            // isLoading={loading}
           >
             Sign Up
           </Button>

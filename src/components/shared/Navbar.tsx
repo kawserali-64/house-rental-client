@@ -31,9 +31,8 @@ export default function Navbar() {
     <Link
       href={href}
       onClick={() => setOpen(false)}
-      className={`text-sm font-medium transition-colors duration-300 ${
-        pathname === href ? "text-cyan-600" : "text-gray-600 hover:text-cyan-600"
-      }`}
+      className={`text-sm font-medium transition-colors duration-300 ${pathname === href ? "text-cyan-600" : "text-gray-600 hover:text-cyan-600"
+        }`}
     >
       {label}
     </Link>
@@ -58,6 +57,7 @@ export default function Navbar() {
               {navLink("/houses/add", "Add House")}
               {navLink("/houses/my-houses", "My Houses")}
               {navLink("/houses/dashboard", "Dashboard")}
+              {navLink("/houses/profile", "Profile")}
             </>
           )}
         </nav>
@@ -103,9 +103,10 @@ export default function Navbar() {
                 {navLink("/houses/add", "Add House")}
                 {navLink("/houses/my-houses", "My Houses")}
                 {navLink("/houses/dashboard", "Dashboard")}
+                {navLink("/houses/profile", "Profile")}
               </>
             )}
-            
+
             <div className="border-t pt-5 mt-2">
               {!user ? (
                 <div className="flex flex-col gap-3">

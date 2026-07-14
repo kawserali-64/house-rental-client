@@ -39,10 +39,9 @@ export default function SignInPage() {
     setLoading(false);
 
     if (error) {
-      toast.error(error.message);
+      toast.error(error.message ?? "Sign in failed");
       return;
     }
-
     toast.success("Login successful!");
     router.push("/");
     router.refresh();
@@ -59,7 +58,7 @@ export default function SignInPage() {
     setDemoLoading(false);
 
     if (error) {
-      toast.error(error.message);
+      toast.error(error.message ?? "Sign in failed");
       return;
     }
 
@@ -122,16 +121,15 @@ export default function SignInPage() {
 
           <Button
             type="submit"
-            color="primary"
-            className="w-full"
-            isLoading={loading}
+            className="w-full bg-cyan-600 text-white"
+            // isLoading={loading}
           >
             Sign In
           </Button>
 
           <Button
             type="button"
-            isLoading={demoLoading}
+            // isLoading={demoLoading}
             onPress={handleDemoLogin}
             className="w-full h-12 rounded-xl bg-white border-2 border-cyan-600 text-cyan-700 font-semibold hover:bg-cyan-600 hover:text-white hover:shadow-xl hover:shadow-cyan-200 transition-all duration-300 flex items-center justify-center gap-2"
           >
